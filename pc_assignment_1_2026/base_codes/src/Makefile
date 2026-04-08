@@ -12,4 +12,6 @@ $(P1): $(P1).cpp
 	$(CPP) $(CFLAGS) $(OMPFLAG) $(P1).cpp -o $(P1)
 
 clean:
-	rm -vf $(P1)
+	rm -f $(P1) output/*.ppm terminal.out
+	@echo "Cleaned."
+
