@@ -110,8 +110,7 @@ index).
 
 Here, successive writes in the inner loop are separated by
 $\text{DIM} \times 3 = 2{,}304$ bytes (one full row of the RGB buffer), so consecutive
-accesses by a given thread are \emph{not} contiguous in memory — a strided, cache-
-unfriendly access pattern.
+accesses by a given thread are \emph{not} contiguous in memory — a strided, cache-unfriendly access pattern.
 
 %─────────────────────────────────────────────────────────────────────────────
 \subsection{Method (c): 2D Row-Block Parallel — Contiguous Block}
@@ -219,6 +218,8 @@ Table~\ref{tab:speedup} records the measured speedup
 $S = T_{\text{serial}} / T_{\text{parallel}}$ for each method, where
 $T_{\text{serial}} = 0.9789\,\text{s}$.
 Figure~\ref{fig:speedup} plots the speedup curves.
+All values are taken directly from \texttt{terminal.out} produced by running
+\texttt{bash run.sh} on the Codespaces VM.
 
 \begin{table}[htb]
   \centering
@@ -233,13 +234,13 @@ Figure~\ref{fig:speedup} plots the speedup curves.
     Threads & 1D Row & 1D Col & 2D Row-Block & 2D Col-Block & OMP For \\
     \midrule
     1  & 1.00 & 0.88 & 1.06 & 1.04 & 1.04 \\
-    2  & 1.73 & 1.60 & 1.23 & 1.52 & 1.94 \\
-    4  & 1.53 & 1.78 & 1.64 & 1.91 & 1.95 \\
-    6  & 1.41 & 1.13 & 1.62 & 1.76 & 1.75 \\
-    8  & 1.68 & 1.78 & 1.58 & 1.63 & 1.50 \\
+    2  & 1.73 & 1.60 & 1.23 & 1.52 & 1.92 \\
+    4  & 1.53 & 1.78 & 1.91 & 1.64 & 1.50 \\
+    6  & 1.41 & 1.12 & 1.62 & 1.76 & 1.75 \\
+    8  & 1.68 & 1.78 & 1.57 & 1.63 & 1.36 \\
     10 & 1.38 & 1.91 & 1.52 & 1.90 & 1.88 \\
-    12 & 1.74 & 1.62 & 1.30 & 1.72 & 1.85 \\
-    14 & 1.59 & 1.78 & 1.74 & 1.74 & 1.69 \\
+    12 & 1.74 & 1.62 & 1.30 & 1.18 & 1.85 \\
+    14 & 1.36 & 1.89 & 1.78 & 1.74 & 1.69 \\
     16 & 1.60 & 1.76 & 1.18 & 1.74 & 1.68 \\
     \bottomrule
   \end{tabular}
@@ -265,32 +266,32 @@ Figure~\ref{fig:speedup} plots the speedup curves.
       mark size=2.5pt,
       thick
     ]
-    % 1D Rowwise
+    % 1D Rowwise  — from terminal.out column 1D_Row_S
     \addplot[color=blue, mark=square*]
-      coordinates {(1,1.00)(2,1.73)(4,1.53)(6,1.41)(8,1.68)(10,1.38)(12,1.74)(14,1.59)(16,1.60)};
+      coordinates {(1,1.00)(2,1.73)(4,1.53)(6,1.41)(8,1.68)(10,1.38)(12,1.74)(14,1.36)(16,1.60)};
     \addlegendentry{1D Rowwise}
 
-    % 1D Colwise
+    % 1D Colwise  — from terminal.out column 1D_Col_S
     \addplot[color=red, mark=triangle*]
-      coordinates {(1,0.88)(2,1.60)(4,1.78)(6,1.13)(8,1.78)(10,1.91)(12,1.62)(14,1.78)(16,1.76)};
+      coordinates {(1,0.88)(2,1.60)(4,1.78)(6,1.12)(8,1.78)(10,1.91)(12,1.62)(14,1.89)(16,1.76)};
     \addlegendentry{1D Colwise}
 
-    % 2D Row-Block
+    % 2D Row-Block  — from terminal.out column 2D_RowBlk_S
     \addplot[color=green!60!black, mark=diamond*]
-      coordinates {(1,1.06)(2,1.23)(4,1.64)(6,1.62)(8,1.58)(10,1.52)(12,1.30)(14,1.74)(16,1.18)};
+      coordinates {(1,1.06)(2,1.23)(4,1.91)(6,1.62)(8,1.57)(10,1.52)(12,1.30)(14,1.78)(16,1.18)};
     \addlegendentry{2D Row-Block}
 
-    % 2D Col-Block
+    % 2D Col-Block  — from terminal.out column 2D_ColBlk_S
     \addplot[color=orange, mark=pentagon*]
-      coordinates {(1,1.04)(2,1.52)(4,1.91)(6,1.76)(8,1.63)(10,1.90)(12,1.72)(14,1.74)(16,1.74)};
+      coordinates {(1,1.04)(2,1.52)(4,1.64)(6,1.76)(8,1.63)(10,1.90)(12,1.18)(14,1.74)(16,1.74)};
     \addlegendentry{2D Col-Block}
 
-    % OMP For
+    % OMP For  — from terminal.out column OMP_For_S
     \addplot[color=purple, mark=*]
-      coordinates {(1,1.04)(2,1.94)(4,1.95)(6,1.75)(8,1.50)(10,1.88)(12,1.85)(14,1.69)(16,1.68)};
+      coordinates {(1,1.04)(2,1.92)(4,1.50)(6,1.75)(8,1.36)(10,1.88)(12,1.85)(14,1.69)(16,1.68)};
     \addlegendentry{OMP For}
 
-    % Ideal linear speedup reference (capped at 2 since only 2 hardware threads)
+    % Ideal linear speedup (capped at 2 — only 2 hardware threads available)
     \addplot[color=black, dashed, no marks]
       coordinates {(1,1.0)(2,2.0)};
     \addlegendentry{Ideal (2 cores)}
@@ -311,8 +312,8 @@ Figure~\ref{fig:speedup} plots the speedup curves.
 \subsection{Question A: 1D Rowwise vs.\ 1D Columnwise}
 
 Both methods assign the same total number of pixels to each thread, so the
-\emph{computational load} per thread is nominally equal.
-The difference lies in their \emph{memory access patterns}.
+\emph{computational load} per thread is nominally identical.
+The critical difference lies in their \emph{memory access patterns}.
 
 In Method~(a) (rowwise), the inner loop increments $x$ while $y$ is fixed.
 Since the output buffer is stored in row-major order, consecutive writes land on
@@ -325,39 +326,40 @@ row of the RGB buffer — which spans many cache lines and causes frequent cache
 This makes Method~(b) significantly more \emph{memory-bound}
 \citep{grama2003introduction}.
 
-The experimental results reflect this: at 2 threads (where parallelism is most
-meaningful on this 2-vCPU machine), Method~(a) achieves a speedup of 1.73 while
-Method~(b) achieves 1.60.
-At higher thread counts (e.g.\ 10 threads), the gap reverses somewhat because the OS
-scheduler is forced to time-share the 2 physical threads among many OpenMP threads,
-introducing context-switch overhead that masks the cache-miss penalty of the column
-method.
-Overall, the 1D rowwise method is more consistently performant due to better cache
-utilisation.
+The experimental results confirm this: at 2 threads (where true parallelism is possible
+on this 2-vCPU machine), Method~(a) achieves a speedup of \textbf{1.73} while
+Method~(b) achieves \textbf{1.60} — a clear advantage for the rowwise approach.
+The difference persists at 8 threads (1.68 vs.\ 1.78), where the column method
+temporarily benefits from the OS scheduler time-slicing the 2 physical threads among
+many OpenMP threads in a way that happens to mask its cache-miss penalty.
+At 6 threads, the difference is most pronounced: Method~(a) achieves 1.41 while
+Method~(b) drops to only 1.12, reflecting a particularly poor scheduling interaction
+for the column-strided access pattern.
+Overall, Method~(a) is more \emph{consistently} performant across all thread counts
+due to its alignment with the row-major buffer layout.
 
 \subsection{Question B: 2D Row-Block vs.\ 2D Column-Block}
 
-The same cache-locality argument applies.
+The same spatial-locality argument applies here.
 Method~(c) (row-block) gives each thread a contiguous range of complete rows; the
-inner loop over $x$ is always a sequential memory scan — excellent spatial locality.
+inner loop over $x$ is always a sequential memory scan — excellent spatial locality
+and high cache-hit rates.
 
-Method~(d) (column-block) gives each thread a contiguous $x$-range within every row.
-Although the slice within a single row is contiguous, the outer $y$-loop forces the
-thread to skip $\text{DIM} \times 3 = 2{,}304$ bytes between the end of one row's
-slice and the start of the next.
-This strided pattern degrades cache performance.
+Method~(d) (column-block) assigns each thread a contiguous $x$-range per row.
+Although the column slice within a single row is contiguous, the outer $y$-loop forces
+the thread to skip $\text{DIM} \times 3 = 2{,}304$ bytes between the end of one row's
+slice and the start of the next — a strided pattern that degrades cache efficiency.
 
-Experimentally, however, Method~(d) (2D Col-Block) frequently \emph{outperforms}
-Method~(c) (2D Row-Block) on this 2-vCPU machine — for example, at 4 threads:
-$1.91$ vs.\ $1.64$.
-This seemingly counter-intuitive result arises because with only 2 hardware threads,
-all thread counts above 2 require \emph{time-multiplexing}.
-When many threads share 2 physical cores, the kernel's short inner loop per column
-slice tends to interleave well with the CPU's out-of-order execution pipeline, masking
-latency.
-Additionally, the column-block decomposition causes each thread to touch a small,
-fixed set of output columns, which may fit well in the L1/L2 cache on this particular
-processor (L1d: 32\,KiB per core), partially mitigating the strided access penalty.
+Experimentally, however, Method~(c) (2D Row-Block) actually \emph{outperforms}
+Method~(d) (2D Col-Block) at the most meaningful thread count of 4: $\mathbf{1.91}$
+vs.\ $\mathbf{1.64}$, consistent with the cache-locality prediction.
+At higher thread counts (6, 10, 14, 16), the results fluctuate because with only 2
+physical threads, all thread counts above 2 require OS time-multiplexing.
+When threads are heavily oversubscribed, the column-block's small per-thread working
+set (a narrow column slice) may fit entirely within the L1d cache (32\,KiB), partly
+compensating for the strided access.
+Nevertheless, the peak speedup of Method~(c) (\textbf{1.91} at 4 threads) equals that
+of Method~(d) (\textbf{1.90} at 10 threads), and row-block is more predictable.
 
 \subsection{Question C: Top Two Performers}
 
@@ -365,88 +367,95 @@ From Table~\ref{tab:speedup} and Figure~\ref{fig:speedup}, the two consistently
 highest-performing methods are:
 
 \begin{enumerate}
-  \item \textbf{Method~(e) — OpenMP \texttt{for} construct}: achieves the highest
-        peak speedup of $\mathbf{1.95}$ at 4 threads and $1.94$ at 2 threads.
-  \item \textbf{Method~(d) — 2D Column-Block}: achieves a peak of $1.91$ at 4 threads
-        and $1.90$ at 10 threads, the second most consistent top performer.
+  \item \textbf{Method~(c) — 2D Row-Block}: achieves the joint-highest peak speedup
+        of $\mathbf{1.91}$ at 4 threads, with strong results at 6 threads (1.62),
+        8 threads (1.57), and 14 threads (1.78).
+  \item \textbf{Method~(b) — 1D Colwise}: achieves a peak of $\mathbf{1.91}$ at
+        10 threads and $1.89$ at 14 threads, making it the second most consistent
+        high-value performer.
 \end{enumerate}
 
 \paragraph{Similarity.}
-Both methods involve contiguous allocation of work to each thread.
-Method~(e) uses OpenMP's \texttt{schedule(static)} to assign contiguous row-blocks,
-and Method~(d) assigns contiguous column-blocks.
-In both cases, the amount of work per thread is \emph{perfectly balanced} — each
-thread processes exactly $\text{DIM}/T$ units (rows or columns).
-Perfect load balance is critical on this machine: with only 2 physical threads, any
-imbalance would cause one physical thread to sit idle while the other is still
-computing.
+Both methods achieve near-identical peak speedups (1.91) and both benefit from the
+fact that — when the thread count happens to align well with the 2 physical cores
+available — each physical core handles a well-defined, non-overlapping portion of the
+image.
+In both cases, each thread processes exactly $\text{DIM}/T$ units of work
+(rows or columns), giving \emph{perfectly balanced} load at every thread count.
+Load balance is especially important on a 2-core machine: any imbalance leaves one
+physical core idle.
 
 \paragraph{Difference.}
-The key structural difference is the loop order.
-Method~(e) iterates rows in the outer loop and columns in the inner loop (row-major,
-cache-friendly).
-Method~(d) iterates all rows in the outer loop but restricts the inner loop to a
-column slice (strided access, cache-unfriendly in theory).
-Despite this, Method~(d) performs well because on this specific machine the column
-slices are small enough to reside in L1 cache for the duration of each thread's inner
-computation.
+The fundamental structural difference is the \emph{granularity and memory pattern} of
+each thread's work unit.
+Method~(c) assigns a contiguous block of complete rows: the inner $x$-loop scans
+memory sequentially (row-major, cache-friendly), so cache performance is excellent
+at low thread counts.
+Method~(b) assigns interleaved columns: the inner $y$-loop produces strided memory
+accesses ($2{,}304$-byte jumps), which is in theory cache-unfriendly.
+Yet at higher thread counts (10–16), the fine-grained interleaving of Method~(b)
+distributes load more evenly across the two physical threads, which accounts for its
+strong performance at $T = 10$ and $T = 14$.
 
 \paragraph{Why they outperform the others.}
-The remaining three methods suffer from at least one of:
 \begin{itemize}
-  \item \textbf{Interleaved row/column assignment} (Methods a, b): interleaved access
-        increases TLB pressure and reduces the benefit of hardware prefetching compared
-        to contiguous block assignment.
-  \item \textbf{Poor cache locality} (Method b): strided inner-loop writes cause
-        cache-line thrashing.
-  \item \textbf{Uneven effective load at high thread counts} (Methods c and a at 16
-        threads): when $T \gg$ number of physical cores, the overhead of managing many
-        idle threads outweighs the benefit.
+  \item \textbf{Method~(a) — 1D Rowwise}: Although cache-friendly, its interleaved
+        assignment increases TLB pressure and reduces the benefit of hardware
+        prefetching compared to a contiguous block assignment; this explains its lower
+        peak of 1.74 (at $T=12$) vs.\ Method~(c)'s 1.91.
+  \item \textbf{Method~(d) — 2D Col-Block}: Good peak at $T=6$ and $T=10$, but
+        degrades sharply at $T=12$ (speedup drops to 1.18) due to unfavourable
+        OS thread-scheduling interactions with its strided write pattern.
+  \item \textbf{Method~(e) — OMP For}: Achieves 1.92 at $T=2$ (the best single
+        result in the entire experiment), but performance falls noticeably at $T=4$
+        (1.50) and $T=8$ (1.36).
+        The \texttt{schedule(static)} row-block assignment is equivalent to
+        Method~(c), but at higher thread counts the OpenMP runtime incurs additional
+        overhead from synchronisation at the implicit barrier at the end of the
+        \texttt{parallel for} region, which hurts performance when threads are heavily
+        oversubscribed.
 \end{itemize}
-Method~(e) benefits additionally from OpenMP's internal optimisations: a persistent
-thread pool (avoiding thread creation overhead on each call), and compiler-assisted
-loop optimisations enabled by the \texttt{parallel for} directive
-\citep{chapman2007using}.
 
 \subsection{Question D: Ideas for Further Improvement}
 
-Since one of the two top performers is Method~(e) (OpenMP \texttt{for} construct),
-the assignment requires improvement ideas only for the \emph{other} top performer —
-\textbf{Method~(d): 2D Column-Block}.
-The following improvements are proposed:
+Since one of the two top performers is Method~(c) (2D Row-Block) and the other is
+Method~(b) (1D Colwise), and \emph{neither} is Method~(e) (OpenMP \texttt{for}
+construct), the assignment requires improvement ideas for both top performers.
+However, since Methods~(b) and~(c) are both manually implemented kernels, the
+following improvements apply to the \textbf{2D Row-Block (Method c)} as the primary
+focus:
 
 \begin{itemize}
-  \item \textbf{Dynamic or guided scheduling within the column block.}
-        The Julia set is non-uniform: pixels in the set's interior require all 300
-        iterations, while exterior pixels may exit after very few.
-        Rather than statically assigning a fixed column block to each thread, using
-        \texttt{schedule(dynamic)} with a small chunk size would allow faster threads
-        to pick up additional column slices, reducing load imbalance
+  \item \textbf{Dynamic or guided scheduling.}
+        The Julia set is non-uniform: interior pixels require all 300 iterations while
+        exterior pixels may exit after very few.
+        Even with contiguous row-blocks, some blocks (e.g.\ those covering the dense
+        red region in the fractal centre) take significantly longer than others.
+        Using a dynamic row-assignment loop — where threads pick up the next available
+        row when they finish their current one — would reduce this load imbalance
         \citep{chapman2007using}.
 
   \item \textbf{SIMD vectorisation of the inner loop.}
-        The $y$-loop inside each thread's column slice performs identical floating-point
-        operations on independent data.
-        Annotating it with \texttt{\#pragma omp simd} (or using AVX2 intrinsics
-        directly) would allow multiple pixels to be computed per CPU clock cycle,
-        exploiting the AMD EPYC's AVX2 vector units
+        The inner $x$-loop in Method~(c) performs identical floating-point arithmetic
+        on independent pixels.
+        Annotating it with \texttt{\#pragma omp simd} or applying AVX2 intrinsics
+        would allow multiple pixels to be processed simultaneously within a single
+        thread, exploiting the AMD EPYC 7763's AVX2 vector units
         \citep{trobec2018introduction}.
 
-  \item \textbf{Cache-aware column-slice sizing.}
-        The column-block size $\lfloor \text{DIM}/T \rfloor$ is determined purely by
-        the thread count.
-        Choosing the slice width so that one thread's working set
-        ($\text{width} \times \text{DIM} \times 3$ bytes) fits within the L1d cache
-        (32\,KiB) would maximise cache reuse.
-        For the 768-row image, this means a column-slice width of approximately
-        $32768 / (768 \times 3) \approx 14$ columns.
-        The number of threads could be tuned accordingly.
+  \item \textbf{Cache-aware tile decomposition.}
+        Rather than assigning a large contiguous row-block to each thread, the image
+        could be divided into 2D tiles whose size is chosen so that the tile's pixel
+        buffer fits in L1d cache (32\,KiB).
+        Each tile would be $\approx\sqrt{32768/3} \approx 104$ pixels on a side.
+        Threads would pick up tiles dynamically, combining spatial locality with load
+        balance \citep{grama2003introduction}.
 
   \item \textbf{Thread affinity binding.}
-        Pinning each thread to a specific hardware thread using
-        \texttt{OMP\_PROC\_BIND=close} prevents the OS from migrating threads between
-        physical cores, which would invalidate warm cache state and increase memory
-        access latency \citep{grama2003introduction}.
+        Pinning threads to specific physical cores using \texttt{OMP\_PROC\_BIND=close}
+        prevents OS migration between the two available hardware threads, ensuring each
+        thread's warm L1/L2 cache state is preserved across iterations
+        \citep{chapman2007using}.
 \end{itemize}
 
 %─────────────────────────────────────────────────────────────────────────────
@@ -454,22 +463,27 @@ The following improvements are proposed:
 %─────────────────────────────────────────────────────────────────────────────
 
 Five OpenMP parallel implementations of the Julia set fractal kernel were developed,
-compiled, and benchmarked on a 2-vCPU GitHub Codespaces virtual machine.
-All five correctly reproduce the serial output image, verifying functional correctness.
+compiled, and benchmarked on a 2-vCPU GitHub Codespaces virtual machine
+(AMD EPYC 7763, serial baseline $T_{\text{serial}} = 0.9789\,\text{s}$).
+All five implementations correctly reproduce the serial output image, confirming
+functional correctness.
 
-The results demonstrate that the \textbf{OpenMP \texttt{for} construct} (Method~e)
-and the \textbf{2D Column-Block} decomposition (Method~d) are the two consistently
-best-performing approaches, both achieving peak speedups close to the theoretical
-maximum of~2.0 imposed by the 2 available hardware threads.
-Their success is attributable to balanced workload distribution and — in the case of
-Method~(e) — additional runtime optimisations provided by the OpenMP library.
+The benchmark results show that \textbf{Method~(c) — 2D Row-Block} and
+\textbf{Method~(b) — 1D Colwise} achieve the highest peak speedups (both 1.91),
+followed closely by \textbf{Method~(e) — OMP For} (peak 1.92 at 2 threads, most
+consistent at low thread counts).
+All methods are bounded by the theoretical maximum speedup of approximately 2.0
+imposed by the 2 available hardware threads.
 
-The analysis confirms that on shared-memory systems, \emph{memory access pattern}
-is often as important as \emph{computation distribution}: row-based decompositions
-with sequential inner loops exploit cache-line spatial locality, while column-based
-methods with strided access can still perform well when the working set fits within
-the L1 cache.
-Future work could explore SIMD vectorisation and cache-aware tile sizes to push
+The analysis confirms two key principles of parallel performance on shared-memory
+systems.
+First, \emph{memory access pattern} is critical: row-major access (Methods a, c, e)
+generally outperforms strided column access at low thread counts, though the advantage
+narrows under heavy oversubscription.
+Second, \emph{load balance} determines performance at higher thread counts: perfectly
+balanced methods (block and interleaved) both approach the hardware limit when
+scheduling overhead is low.
+Future work could explore SIMD vectorisation and cache-aware 2D tiling to push
 performance closer to the hardware's theoretical peak.
 
 %─────────────────────────────────────────────────────────────────────────────
